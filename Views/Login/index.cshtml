@@ -1,0 +1,42 @@
+﻿@model User
+@{
+	ViewData["Title"] = "Login";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 class="col-lg-offset-5">Login</h2>
+
+@*<form class="col-md-offset-4">*@
+@using (Html.BeginForm("Create", "Login")) {
+	<div class="row">
+		<div class="col col-md-3 col-lg-offset-4">
+			<div class="form-group col">
+				@Html.TextBoxFor(m => m.Username,
+								new { placeholder="user name",
+									@class = "form-control col-md-3 form-item"
+								})
+				@Html.ValidationMessageFor(m => m.Username)
+				<br />
+				@Html.PasswordFor(m => m.Password,
+								 new { placeholder = "password",
+								 @class = "form-control col-md-3 form-item" })
+				@*@Html.ValidationMessageFor(m => m.Password)*@
+				<span class="field-validation-error">@ViewData["error_message"]</span>
+			</div>
+			<div class="row">
+
+				<button type="submit" class="col-lg-offset-2 btn btn-primary col-md-9 form-item">
+					LogIN
+				</button>
+				<p class="col-md-5 col-lg-offset-5 form-item" style="font-size: 11px;"> or </p>
+				<a href="/Login/SignUp" class="col-lg-offset-2 btn btn-primary col-md-9 form-item">
+					SignUP
+				</a>
+
+			</div>
+			
+		</div>
+
+	</div>
+
+}

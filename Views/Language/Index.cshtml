@@ -1,0 +1,390 @@
+﻿@{
+	ViewData["Title"] = "Index";
+
+	Layout = "~/Views/Shared_Login/_Layout.cshtml";
+	//List<Language> languages = (List)
+	Language language = (Language)ViewData["language"];
+	List<Translated> translatedList = (List<Translated>)ViewData["translated_list"];
+}
+
+
+<br/>
+<div class="row">
+	<div class="col-md-2">
+		<button type="button" class="btn btn-primary form-control" data-toggle="modal"
+				data-target="#myModal">
+			<i class="fa fa-plus"></i> Word
+
+		</button>
+	</div>
+	<div class="col-md-2">
+		<button type="button" class="btn btn-primary form-control" data-toggle="modal"
+				data-target="#newTranslation">
+			<i class="fa fa-plus"></i>
+			Translation
+		</button>
+	</div>
+	<div class="col-md-3">
+		<button type="button" class="btn btn-primary form-control" data-toggle="modal"
+				data-target="#newContributor">
+			<i class="fa fa-plus"></i>
+			Contributor
+		</button>
+	</div>
+	<div class="col-md-4">
+		<div>
+			@if ((string)ViewData["notification"] == "good") {
+				<div class="alert alert-success">
+					<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+					<strong>@ViewData["notification_message"]</strong>
+				</div>
+
+			}
+			else if ((string)ViewData["notification"] == "bad") {
+				<div class="alert alert-danger">
+					<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+					<strong>@ViewData["notification_message"]</strong>
+				</div>
+			}
+
+		</div>
+	</div>
+</div>
+@* This is a table of the translations and  *@
+<div>
+	<br/>
+	<section class="panel">
+		<header class="panel-heading">
+			<h2 class="panel-title">@{string name = ((Language)ViewData["language"]).LanguageName;} @name Words</h2>
+		</header>
+		<div class="panel-body">
+
+			<table class="table table-bordered table-striped mb-none" id="datatable-editable">
+				<thead>
+					<tr>
+						<th>Added By</th>
+						<th>Word</th>
+						<th>Translation</th>
+						<th>Translation Language</th>
+						<th>Translated By</th>
+						@{ if ((bool)ViewData["admin"]) {
+							<th>Actions</th>
+								}
+						}
+
+					</tr>
+				</thead>
+				<tbody>
+					@if (translatedList != null) {
+
+						for (int i = 0; i < translatedList.Count; i++) {
+							<tr class="row1">
+								<td>
+									<a href="#">
+										<div class="row">
+											<div class="col-md-1">
+												<i class="fa fa-user-md"></i>
+											</div>
+											<div class="col-md-6">
+												<span class="name">@translatedList[i].AddedBy</span>
+											</div>
+										</div>
+									</a>
+								</td>
+								<td>@translatedList[i].Word</td>
+
+								<td>@translatedList[i].Translation</td>
+								<td>@translatedList[i].TranslationLanguage</td>
+								<td>
+									<a href="#">
+										<div class="row">
+											<div class="col-md-1">
+												<i class="fa fa-user-md"></i>
+											</div>
+											<div class="col-md-6">
+												<span class="name">@translatedList[i].TranslatedBy</span>
+											</div>
+										</div>
+									</a>
+								</td>
+								@{
+									@if ((bool)ViewData["admin"]) {
+										<td>
+
+											<form asp-controller="Language" 
+														asp-action="DeleteTranslation" method="post">
+												<input value="@language.LanguageId" name="languageId" hidden />
+												<input value="@translatedList[i].WordId" name="wordId" hidden />
+												<input value="@translatedList[i].TranslatedWordId" name="translatedWordId" hidden />
+												<a href="#" onclick="$(this).closest('form').submit()">
+													<i class="fa fa-times"></i>
+												</a>
+											</form>
+
+										</td>
+									}
+
+								}
+
+							</tr>
+						}
+					}
+				</tbody>
+			</table>
+		</div>
+	</section>
+
+
+</div>
+
+<h4>Contributors</h4>
+<div class="row">
+	@{ List<Contributor> contributorList = (List<Contributor>)ViewData["contributor_list"];}
+	@for (int i = 0; i < contributorList.Count; i++) {
+	<a href="/Account/Home">
+		<div class="col-md-3 contributor-card">
+			
+			<div class="panel-body hidden-md panel panel-featured-left panel-featured-right panel-featured-bottom panel-featured-primary">
+				@*<a href="#" class="fa fa-times close" @*style="margin-right: 10px;margin-top: 10px;"></a>*@
+				@*<div class="panel-actions">*@
+
+				@*</div>*@
+				<div class="row">
+					<div class="col-md-9">
+						<div class="widget-summary widget-summary-md">
+
+							<div class="widget-summary-col widget-summary-col-icon">
+								<div class="summary-icon bg-primary">
+									<i class="fa fa-life-ring"></i>
+								</div>
+							</div>
+							<div class="widget-summary-col">
+								<div class="summary">
+
+									<h4 class="title">@contributorList[i].Username</h4>
+									<div class="info">
+										<strong class="amount">@contributorList[i].NumberOfWords Words</strong>
+										<br />
+										<span class="text-primary">@contributorList[i].NumberOfTranslations translations</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-1">
+						@if((bool)ViewData["admin"]){
+							<form asp-controller="Language" asp-action="DeleteContributor">
+								<input name="contributorId" value="@contributorList[i].Username" hidden />
+								<button type="submit" class="btn btn-danger"><i class="fa fa-times"></i></button>
+							</form>
+						}
+					</div>
+				</div>
+				
+				
+					
+				
+			</div>
+		</div>
+	</a>
+	}
+
+	@if (contributorList.Count == 0) {
+		<h4>Sorry There are no Contributors At the moment</h4>
+	}
+
+</div>
+
+
+
+	<div id="myModal" class="modal fade mfp-a" style="z-index: 9999;" role="dialog">
+		<div class="modal-dialog">
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">Add Word</h4>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-md-8 col-lg-offset-2">
+							@*@Html.TextBoxFor()*@
+							<form asp-controller="Language" asp-action="NewWord" accept-charset="utf-8">
+								@*<input type="text" name="toLangId" class="form-control form-item" list="languageAutoCompleteList" />*@
+								<input type="text" class="form-control form-item"
+									   placeholder="@language.LanguageName"
+									   disabled>
+								<input type="text" name="langId"
+									   value="@language.LanguageId"
+									   hidden />
+								<input type="text" name="newWord" class="form-control form-item" placeholder="new word" required />
+								<textarea name="details"
+										  class="form-control form-item" rows="5" id="message-text"></textarea>
+								<button type="submit" class="btn btn-success form-item col-md-offset-10">Submit</button>
+							</form>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	
+
+
+
+	<div id="newTranslation" class="modal fade mfp-a" style="z-index: 9999;" role="dialog">
+		<div class="modal-dialog">
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">Modal Header</h4>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-md-8 col-lg-offset-2">
+							@*@Html.TextBoxFor()*@
+							<form action="/Language/NewTranslation">
+								@*<input type="text" name="toLangId" class="form-control form-item" list="languageAutoCompleteList" />*@
+								<input type="text" class="form-control form-item"
+									   placeholder="From @language.LanguageName"
+									   disabled>
+								<select id="toLangId" data-plugin-selecttwo="" name="toLangId"
+										class="form-control populate select2-offscreen form-item"
+										tabindex="-1" title="">
+
+									@{List<Language> languages = (List<Language>)ViewData["language_list"];}
+									@foreach (Language i in languages) {
+										<option value="@i.LanguageId" class="form-control">@i.LanguageName</option>
+									}
+								</select>
+								@*<input type="text" list="languageAutoCompleteList"
+									   name="toLangId"
+									   id="toLangId"
+									   placeholder="To Languge"
+									   class="form-control form-item"
+									   required>
+								<datalist id="languageAutoCompleteList">
+									
+								</datalist>*@
+								@*<input type="text" name="word" list="wordAutoCompleteList"
+									   class="form-control form-item"
+									   placeholder="Word"
+									   required/>
+								<datalist id="wordAutoCompleteList">
+									@{List<Word> words = (List<Word>)ViewData["word_list"];}
+										@foreach (Word i in words) {
+											<option value="@i.WordId" class="form-control">@i.WordContent</option>
+										 }
+								</datalist>*@
+								<select class="form-control populate select2-offscreen form-item"
+										name="word">
+									@{List<Word> words = (List<Word>)ViewData["word_list"];}
+									@foreach (Word i in words) {
+										<option value="@i.WordId" class="form-control">@i.WordContent</option>
+									}
+								</select>
+								@*<input type="text" name="newTranslation" list="translateAutoCompleteList"
+									   class="form-control form-item" placeholder="Translation" 
+									   required/>
+								<datalist id="translateAutoCompleteList" class="multiselect"></datalist>*@
+								<select id="translateWordsList" name="newTranslation" data-plugin-selecttwo=""
+										class="form-control populate select2-offscreen form-item"
+										tabindex="-1" title=""></select>
+								<textarea name="details" required
+										  placeholder="Translation details"
+										  class="form-control form-item" rows="5" id="message-text"></textarea>
+								<button type="submit" class="btn btn-success form-item col-md-offset-10">Submit</button>
+							</form>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="newContributor" class="modal fade mfp-a" style="z-index: 9999;" role="dialog">
+		<div class="modal-dialog">
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">Modal Header</h4>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-md-8 col-lg-offset-2">
+							<form asp-controller ="Language" asp-action="NewContributor">
+								<input type="text" class="form-control form-item"
+									   placeholder="From @language.LanguageName"
+									   disabled>
+								<input type="text" name="langId"
+									   value="@language.LanguageId"
+									   hidden />
+
+								<input type="text" name="contributorId" class="form-control form-item"/>
+								<button type="submit" class="btn btn-success form-item col-md-offset-10">Submit</button>
+							</form>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	
+
+<script src="~/assets/vendor/jquery/jquery.js"></script>
+<script>
+	$(document).ready(
+		function () {
+			$("#toLangId").change(
+				function () {
+					populate();
+				}
+			);
+		},
+	);
+	populate();
+	function populate() {
+		var options = {};
+		options.url = "/Language/GetWordList";
+		options.type = "GET";
+		options.data = { "criteria": $("#toLangId").val() };
+		options.dataType = "json";
+		options.success = function (data) {
+			$("#translateWordsList").empty();
+			for (var i = 0; i < data.length; i += 2) {
+				$("#translateWordsList").append("<option value=" + data[i + 1] + ">" + data[i] + "</option>");
+			}
+
+		}
+		$.ajax(options);
+	}
+	
+</script>
+
+<script src="~/assets/vendor/pnotify/pnotify.custom.js"></script>
+
+@*<div class="col-md-6">
+	@*<div class="select2-container form-control populate" id="s2id_autogen1"><a href="javascript:void(0)" class="select2-choice" tabindex="-1">   
+		<span class="select2-chosen" id="select2-chosen-2">Alaska</span><abbr class="select2-search-choice-close"></abbr>   
+		<span class="select2-arrow" role="presentation"><b role="presentation"></b></span></a>
+	<label for="s2id_autogen2" class="select2-offscreen"></label>
+	<input class="select2-focusser select2-offscreen" type="text" aria-haspopup="true" role="button" aria-labelledby="select2-chosen-2" id="s2id_autogen2">
+		</div>
+	<select id="toLangId1" data-plugin-selecttwo="" class="form-control populate select2-offscreen" tabindex="-1" title="">
+		<option>Amharic</option>
+		<option>English</option>
+	</select>
+</div>*@

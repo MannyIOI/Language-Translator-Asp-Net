@@ -1,0 +1,135 @@
+﻿@{
+	ViewData["Title"] = "Home";
+	Layout = "~/Views/Shared_Login/_Layout.cshtml";
+}
+
+<div class="row">
+	@*@ListLanguage> languageList = (List<Language>) ViewData["language_list"]*@
+	@{List<Language> languageList = (List<Language>)ViewData["language_list"];}
+
+	<h3>@ViewData["username"] Languages</h3>
+	@if (languageList != null) {
+		@for (int i = 0; i < languageList.Count; i++) {
+			
+			<div class="col-md-3">
+					<a href="/Account/Languages?admin=true&languageId=@languageList[i].LanguageId" style="text-decoration: none;">
+						
+							<section class="panel language-card">
+								<header class="panel-heading bg-white">
+									<form asp-controller="Account" asp-action="DeleteLanguage" method="post">
+										<input name="languageId" value="@languageList[i].LanguageId" hidden />
+										<button type="submit" class="col-lg-offset-10 btn btn-danger"><i class="fa fa-times"></i></button>
+									</form>
+									<div class="panel-heading-icon bg-primary mt-sm">
+										<i class="fa fa-language"></i>
+									</div>
+
+								</header>
+								<div class="panel-body">
+									<h3 class="text-semibold mt-none text-center">@languageList[i].LanguageName</h3>
+									@*<p class="text-center">@languageList[i].LanguageDetails</p>*@
+								</div>
+							</section>
+					</a>
+			</div>
+		}
+	}
+	<div class="col-md-3" style="margin-top: 60px;margin-bottom: 20px;">
+		<div class="row">
+			<a href="#" data-toggle="modal"
+				data-target="#newLanguage">
+				<div class="panel-heading-icon bg-primary mt-sm">
+					<i class="fa fa-plus"></i>
+				</div>
+			</a>
+		</div>
+		<br/>
+		<div class="row">
+			@if (ViewData["language_add_success"] == null) {
+
+			}
+			else if ((string)ViewData["language_add_success"] == "true") {
+				<div class="alert alert-success">
+					<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+					<strong>Well done!</strong> <span> You have added a new Language</span>
+				</div>
+			}
+			else {
+				<div class="alert alert-danger">
+					<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+					<strong>Sorry!</strong> <span> There is already a Language with that name</span>
+				</div>
+			}
+		</div>
+				
+		<div id="newLanguage" class="modal fade mfp-a" style="z-index: 9999;" role="dialog">
+			<div class="modal-dialog">
+				<!-- Modal content-->
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Add Language</h4>
+					</div>
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-md-8 col-lg-offset-2">
+								@*@Html.TextBoxFor()*@
+								<form action="/Account/NewLanguage" method="post">
+									<input class="form-control form-item" name="languageName"
+											placeholder="Lanugage Name" />
+									
+									<textarea name="languageDetails"
+												class="form-control form-item" rows="7"
+												placeholder="Lanugage Details"></textarea>
+									<button class="col-md-4 col-lg-offset-8 btn btn-primary">
+										Add Language
+									</button>
+								</form>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+	<br/>
+	<br />
+	<br />
+	<div class="row">
+
+		<h3>My Contributions</h3>
+		@{List<Contribution> contributions = (List<Contribution>) ViewData["contribution_list"];}
+		@for (int i = 0; i < contributions.Count; i++) {
+		<a href="/Account/Languages?admin=false&languageId=22">
+			
+			<div class="col-md-3 contributor-card">
+				<div class="panel-body">
+					<div class="widget-summary widget-summary-md">
+						<div class="widget-summary-col widget-summary-col-icon">
+							<div class="summary-icon bg-primary">
+								<i class="fa fa-life-ring"></i>
+							</div>
+						</div>
+						<div class="widget-summary-col">
+							<div class="summary">
+								<h4 class="title">@*Language 1*@@contributions[i].Language</h4>
+								<div class="info">
+									<strong class="amount">@*15 words*@@contributions[i].NumOfWords Words</strong>
+									<br />
+									<span class="text-primary">@*2 translations*@@contributions[i].NumOfTranslations translations</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</a>
+		}
+
+
+	</div>
+

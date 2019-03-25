@@ -1,0 +1,71 @@
+﻿@model Translation
+@{
+	ViewData["Title"] = "Home Page";
+}
+
+@*<input type="text"/>
+	<i class="fa fa-exchange"></i>
+	<input type="text"/>*@
+@*@using (Html.BeginForm("Translate", "Home")) {
+	@Html.TextBoxFor(m => m.FromWord,
+								new { placeholder="user name",
+								@class = "form-control col-md-4 form-item" })
+	<p class="col-lg-offset-3" style="font-size: xx-large;">@ViewData["translated"]</p>*@
+<br /><br /><br /><br /><br />
+<div class="row col-lg-offset-3">
+	<form action="/Home/Translate" method="post">
+		<div class="col-md-3">
+			<div class="row">
+				<select name="fromLangId" id="fromLangId" class="form-item col-lg-offset-1">
+					@{ List<Language> languages = (List<Language>)ViewData["languages"];}
+					@foreach (Language language in languages) {
+						<option value="@language.LanguageId">@language.LanguageName</option>
+					}
+				</select>
+				<div class="col-md-6">
+					@*<input type="text" class="form-control" id="fromLangId" name="fromLangId" value="22"/>*@
+
+				</div>
+			</div>
+			<textarea rows="5" style="font-size: x-large;" class="form-control" name ="fromWord" id="fromWord"></textarea>
+		</div>
+		<div class="col-sm-1" style="width: 10px; margin: 0; padding: 0;">
+			<br/><br />
+			<i class="fa fa-exchange" aria-hidden="true"></i>
+		</div>
+		<div class="col-md-3">
+			<div class="row">
+				<select name="toLangId" id="toLangId" class="form-item col-lg-offset-6">
+					@foreach (Language language in languages) {
+						<option value="@language.LanguageId">@language.LanguageName</option>
+					}
+				</select>
+				
+			</div>
+			<textarea rows="5" style="font-size: x-large;" class="form-control" id="toWord">@ViewData["translated"]</textarea>
+		</div>
+	</form>
+</div>
+<script src="~/assets/vendor/jquery/jquery.js"></script>
+<script>
+	$(document).ready(
+		function () {
+			$("#fromWord").on("input", function () {
+
+				//alert($("#toWord").val());
+				//$("#toWord").val("alkdjfkl");
+				var options = {};
+				options.url = "/Home/GetTranslationJSON";
+				options.type = "GET";
+				options.data = { "fromWord": $("#fromWord").val(), "fromLangId": $("#fromLangId").val(), "toLangId": $("#toLangId").val() };
+
+				options.dataType = "json";
+				options.success = function (data) {
+					//alert("here " + data);
+					$("#toWord").val(data[0]);
+				};
+				$.ajax(options);
+			})
+		}
+	);
+</script>
